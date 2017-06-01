@@ -31,6 +31,8 @@ To download data from the watch using the `sync` command, the program `polarsync
 
 # About & License
 
+In May 2017 the author bought a Polar M400 watch. Unfortunately the software does not work on Linux and that's how this project was born.
+
 As far as I know, this is the first open source program that has started to reconstruct Polar protobuf message structs (".proto files"). See polar.proto for the main effort.
 
 Copyright (c) Björn Edström <be@bjrn.se> 2017. See LICENSE for details.
