@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) Björn Edström <be@bjrn.se> 2017
+# See LICENSE for details
+
+import argparse
+import datetime
+import os.path
+import subprocess
+
+import polar_pb2
+
+POLAR_ROOT = '/U/0/'
+
+
+def proto_parse_datetime(proto_dt):
+    return datetime.datetime(proto_dt.date.year,
+                             proto_dt.date.month,
+                             proto_dt.date.day,
+                             proto_dt.time.hour,
+                             proto_dt.time.minute,
+                             proto_dt.time.second)
+
+
+def print_session(obj):
+    print '%s - %s (%02d:%02d:%02d)' % (
+        proto_parse_datetime(obj.start_time),
+        proto_parse_datetime(obj.stop_time), obj.duration.hour, obj.duration.minute, obj.duration.second)
+    print 'distance: %.2f km, kcal: %d' % (obj.distance / 1000.0, obj.kcal)
+    print 'avg hr: %d, max hr: %d' % (obj.heartrate.average, obj.heartrate.maximum)
+
+    duration_sec = obj.duration.hour * 3600 + obj.duration.minute * 60 + obj.duration.second
+    for i, zone in enumerate(obj.zones):
+        sec = zone.hour * 3600 + zone.minute * 60 + zone.second
+        print 'zone %d: %02d:%02d:%02d [%02d%%]' % (i + 1, zone.hour, zone.minute, zone.second,
+                                                    (float(sec) / float(duration_sec))*100)
+
+
+def find_sessions(data_dir):
+    root_dir = os.path.join(data_dir, POLAR_ROOT[1:])
+    for level1 in os.listdir(root_dir):
+        session_dir = os.path.join(root_dir, level1, 'E/')
+        try:
+            for level2 in os.listdir(session_dir):
+                sub_session_dir = os.path.join(session_dir, level2)
+                yield os.path.join(sub_session_dir, 'TSESS.BPB')
+        except OSError, e:
+            if e.errno == 2 or e.errno == 20:
+                continue
+            raise
+
+
+def show(parser, args):
+    data_dir = os.path.abspath(os.path.expanduser(args.data))
+    for tsess_path in sorted(list(find_sessions(data_dir)), reverse=False):
+        with file(tsess_path) as fobj:
+            tsess_buf = fobj.read()
+            tsess_obj = polar_pb2.TSession()
+            tsess_obj.ParseFromString(tsess_buf)
+
+            print_session(tsess_obj)
+            print
+
+
+def sync(parser, args):
+    data_dir = os.path.abspath(os.path.expanduser(args.data))
+    subprocess.call(['polarsync', '-o', data_dir])
+
+
+def main():
+    parser = argparse.ArgumentParser(usage="""
+  %(prog)s [options] show
+  %(prog)s [options] sync""")
+
+    subparsers = parser.add_subparsers(title='subcommands')
+
+    misc_group = parser.add_argument_group('global options')
+    misc_group.add_argument('-d', '--data', metavar='PATH',
+                            help='data directory [%(default)s]',
+                            default='~/polar')
+
+    parser_show = subparsers.add_parser('show', help='show an overview of sessions')
+    parser_show.set_defaults(func=show)
+
+    parser_sync = subparsers.add_parser('sync', help='sync data from watch')
+    parser_sync.set_defaults(func=sync)
+
+    args = parser.parse_args()
+    args.func(parser, args)
+
+
+if __name__ == '__main__':
+    main()

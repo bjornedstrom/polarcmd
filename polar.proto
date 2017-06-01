@@ -1,0 +1,56 @@
+message Date {
+  optional int32 year = 1;
+  optional int32 month = 2;
+  optional int32 day = 3;
+}
+
+message Time {
+  optional int32 hour = 1;
+  optional int32 minute = 2;
+  optional int32 second = 3;
+  optional int32 msec = 4; // XXX: Not sure
+}
+
+message DateTime {
+  optional Date date = 1;
+  optional Time time = 2;
+  optional int32 unk1 = 3;
+  optional int32 unk2 = 4;
+}
+
+message Heartrate2 {
+  optional int32 average = 1;
+  optional int32 maximum = 2;
+}
+
+message TrainingStats {
+  optional int32 training_load_int = 1;
+  optional Time training_load_time = 2;
+  optional int32 unk1 = 3;
+  optional int32 unk2 = 4;
+  optional int32 fat_percentage = 5;
+}
+
+message TrainingCategory {
+  optional string category = 1;
+}
+
+message TSession {
+  optional DateTime start_time = 1;
+  optional int32 unk1 = 2;
+  optional string watch_serial = 3;
+  optional string watch_product = 4;
+  optional Time duration = 5;
+  optional float distance = 6;
+  optional int32 kcal = 7;
+  optional Heartrate2 heartrate = 8;
+  repeated Time zones = 9;
+  optional TrainingStats training_stats = 10;
+  optional TrainingCategory training_category = 11;
+  // XXX: type 12-14 missing from my sample
+  optional double latitude = 15;
+  optional double longitude = 16;
+  optional int32 unk2 = 17;
+  // XXX: type 18-19 missing from my sample
+  optional DateTime stop_time = 20;
+}
