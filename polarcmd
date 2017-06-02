@@ -65,7 +65,10 @@ def show(parser, args):
 
 def sync(parser, args):
     data_dir = os.path.abspath(os.path.expanduser(args.data))
-    subprocess.call(['polarsync', '-o', data_dir])
+    cmd = ['polarsync', '-o', data_dir, '--usb-id', args.usb_id]
+    if args.no_overwrite:
+        cmd += ['-n']
+    subprocess.call(cmd)
 
 
 def main():
@@ -77,13 +80,17 @@ def main():
 
     misc_group = parser.add_argument_group('global options')
     misc_group.add_argument('-d', '--data', metavar='PATH',
-                            help='data directory [%(default)s]',
+                            help='Data directory [%(default)s]',
                             default='~/polar')
 
-    parser_show = subparsers.add_parser('show', help='show an overview of sessions')
+    parser_show = subparsers.add_parser('show', help='Show an overview of sessions')
     parser_show.set_defaults(func=show)
 
-    parser_sync = subparsers.add_parser('sync', help='sync data from watch')
+    parser_sync = subparsers.add_parser('sync', help='Sync data from watch')
+    parser_sync.add_argument('-n', '--no-overwrite', action='store_true', default=False,
+                             help='Do not overwrite existing files [%(default)s]')
+    parser_sync.add_argument('--usb-id', metavar='NNNN:NNNN', default='0da4:0008',
+                             help='USB vendor:product id [%(default)s]')
     parser_sync.set_defaults(func=sync)
 
     args = parser.parse_args()
