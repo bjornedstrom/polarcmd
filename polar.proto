@@ -1,3 +1,11 @@
+// This is an effort to reconstruct Polar protobuf messages by black
+// box reverse engineering/testing.
+//
+// The following files are currently figured out:
+//
+//   TSESS.BPB - 90% understood
+//
+
 message Date {
   optional int32 year = 1;
   optional int32 month = 2;

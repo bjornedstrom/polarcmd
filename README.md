@@ -25,9 +25,11 @@ Here is an example use (of a failed attempt at figuring out the authors max hear
     zone 4: 00:02:48 [05%]
     zone 5: 00:02:31 [04%]
 
-# Install
+# Build & Install
 
 To download data from the watch using the `sync` command, the program `polarsync` (https://github.com/bjornedstrom/polarsync) needs to be reachable on PATH.
+
+    protoc --python_out=. polar.proto
 
 # About & License
 
