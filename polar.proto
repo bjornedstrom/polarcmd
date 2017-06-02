@@ -4,6 +4,7 @@
 // The following files are currently figured out:
 //
 //   TSESS.BPB - 90% understood
+//   S/PHYSDATA.BPB - 70% understood
 //
 
 message Date {
@@ -61,4 +62,38 @@ message TSession {
   optional int32 unk2 = 17;
   // XXX: type 18-19 missing from my sample
   optional DateTime stop_time = 20;
+}
+
+message SettingDate {
+  optional Date setting = 1;
+  optional DateTime updated = 2;
+}
+
+message SettingInt {
+  optional int32 setting = 1;
+  optional DateTime updated = 2;
+}
+
+message SettingFloat {
+  optional float setting = 1;
+  optional DateTime updated = 2;
+}
+
+message PhysData {
+  optional SettingDate dob = 1;
+  optional SettingInt unk1 = 2;
+  optional SettingFloat weight = 3;
+  optional SettingFloat height = 4;
+  optional SettingInt max_hr = 5;
+  optional SettingInt rest_hr = 6;
+  // XXX: 7
+  optional SettingInt aerobic_thres = 8;
+  optional SettingInt anaerobic_thres = 9;
+  optional SettingInt vo2max = 10;
+
+  optional SettingInt unk2 = 11;
+  optional SettingInt unk3 = 12;
+  optional SettingFloat unk4 = 13;
+  optional SettingInt unk5 = 16;
+  optional DateTime updated = 100;
 }
